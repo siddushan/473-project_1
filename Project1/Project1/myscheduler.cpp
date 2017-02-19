@@ -1,12 +1,26 @@
-//
 //myschedule.cpp
 /*Define all the functions in 'myschedule.h' here.*/
 #include "myscheduler.h"
+
+bool MyScheduler::comparePriority(ThreadDescriptorBlock thread01, ThreadDescriptorBlock thread02) {
+	return thread01.priority < thread02.priority;
+}
+
+bool MyScheduler::compareTimeRemaining(ThreadDescriptorBlock thread01, ThreadDescriptorBlock thread02) {
+	return thread01.remaining_time < thread02.remaining_time;
+}
 
 void MyScheduler::CreateThread(int arriving_time, int remaining_time, int priority, int tid) //Thread ID not Process ID
 {
 	//Function to Create Thread(s) and insert them in the student
 	//defined data structure
+	ThreadDescriptorBlock thread;
+	thread.arriving_time = arriving_time;
+	thread.remaining_time = remaining_time;
+	thread.priority = priority;
+	thread.tid = tid;
+
+	thread_list.push_back(thread);
 }
 
 bool MyScheduler::Dispatch()
@@ -19,6 +33,7 @@ bool MyScheduler::Dispatch()
 
 			break;
 		case STRFwoP:	//Shortest Time Remaining First, without preemption
+			thread_list.sort(compareTimeRemaining);
 
 			break;
 		case STRFwP:	//Shortest Time Remaining First, with preemption
