@@ -33,7 +33,7 @@ bool MyScheduler::Dispatch()
 
 			break;
 		case STRFwoP:	//Shortest Time Remaining First, without preemption
-			thread_list.sort(compareTimeRemaining);
+			//thread_list.sort(compareTimeRemaining); this needs to be changed
 
 			break;
 		case STRFwP:	//Shortest Time Remaining First, with preemption
