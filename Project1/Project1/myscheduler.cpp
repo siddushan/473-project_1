@@ -3,9 +3,15 @@
 #include "myscheduler.h"
 #include <algorithm>
 
-bool operator<(ThreadDescriptorBlock thread01, ThreadDescriptorBlock thread02) {
-	return thread01.arriving_time < thread02.arriving_time;
+bool sort_by_arriving_time(ThreadDescriptorBlock thread1, ThreadDescriptorBlock thread2) {
+	return thread1.arriving_time < thread2.arriving_time;
 }
+
+bool sort_by_remaining_time(ThreadDescriptorBlock thread1, ThreadDescriptorBlock thread2)
+{
+	return thread1.remaining_time < thread1.remaining_time;
+}
+
 
 void MyScheduler::CreateThread(int arriving_time, int remaining_time, int priority, int tid) //Thread ID not Process ID
 {
@@ -36,7 +42,7 @@ bool MyScheduler::Dispatch()
 		break;
 	case PBS:		//Priority Based Scheduling, with preemption
 	{ //Curly braces are here cause I was getting a weird error without them. 
-		thread_list.sort(); //sort the threads by arrival time
+		thread_list.sort(sort_by_arriving_time); //sort the threads by arrival time
 
 		list<ThreadDescriptorBlock>::iterator itr = thread_list.begin();
 
