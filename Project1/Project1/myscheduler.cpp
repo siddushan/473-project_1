@@ -35,10 +35,12 @@ bool MyScheduler::Dispatch()
 
 		break;
 	case PBS:		//Priority Based Scheduling, with preemption
-
+	{ //Curly braces are here cause I was getting a weird error without them. 
 		thread_list.sort(); //sort the threads by arrival time
 
-		for (list<ThreadDescriptorBlock>::iterator itr = thread_list.begin(); itr != thread_list.end() && !thread_list.empty(); ) { //loop through ThreadDescriptorBlocks
+		list<ThreadDescriptorBlock>::iterator itr = thread_list.begin();
+
+		while (itr != thread_list.end() && !thread_list.empty()) { //loop through ThreadDescriptorBlocks
 
 			if (itr->arriving_time <= timer) {	//examine all threads which have arrived
 
@@ -92,12 +94,12 @@ bool MyScheduler::Dispatch()
 				break;
 			}
 
-			if(thread_list.size() > 0)
+			if (thread_list.size() > 0)
 				++itr;
 		}
 
-		endPBS:
 		break;
+	}
 	default:
 		cout << "Invalid policy!";
 		throw 0;
