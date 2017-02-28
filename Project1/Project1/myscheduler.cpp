@@ -110,7 +110,7 @@ bool MyScheduler::Dispatch()
 				return true;//return true to continue executing
 			}
 		}
-		return false;//return false all threads have completed
+		if (thread_list.empty()) { return false; }//return false all threads have completed
 			
 	}
 		break;
