@@ -29,6 +29,21 @@ bool MyScheduler::Dispatch()
 {
 	//Todo: Check and remove finished threads
 	//Todo: Check if all the threads are finished; if so, return false
+	if (thread_list.empty())
+	{
+		bool isDone = true;
+		for (int i = 0; i < num_cpu; i++)
+		{
+			if (CPUs[i] != NULL)
+			{
+				isDone = false;
+				break;
+			}
+		}
+		if (isDone)
+			return false;
+	}
+	
 	switch (policy)
 	{
 	case FCFS:		//First Come First Serve
