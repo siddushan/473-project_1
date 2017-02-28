@@ -105,11 +105,7 @@ bool MyScheduler::Dispatch()
 			}		
 		}
 
-		for (int t = 0; t < num_cpu; t++) {//check to see if cpus have finished executing all threads
-			if (CPUs[t] != NULL) {
-				return true;//return true to continue executing
-			}
-		}
+		
 		if (thread_list.empty()) { return false; }//return false all threads have completed
 			
 	}
