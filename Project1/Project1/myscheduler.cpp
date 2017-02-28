@@ -37,8 +37,82 @@ bool MyScheduler::Dispatch()
 	case STRFwoP:	//Shortest Time Remaining First, without preemption
 
 		break;
-	case STRFwP:	//Shortest Time Remaining First, with preemption
+	case STRFwP:{	//Shortest Time Remaining First, with preemption
+		list<ThreadDescriptorBlock>::iterator itr_srtf;// iterator through thread list
+		ThreadDescriptorBlock thread_off = ThreadDescriptorBlock();
+		int current_cpu = 0;
+		bool cpu_avail=false;
 
+		thread_list.sort(sort_by_arriving_time);//sort thread list according to arrival time
+		itr_srtf = thread_list.begin();
+		
+		while (itr_srtf != thread_list.end() && !thread_list.empty()) {//
+			if (itr_srtf->arriving_time <= timer) {//only considering threads that have arrived
+				//iterate through cpus to check availability
+				for (current_cpu = 0; (current_cpu < num_cpu)&& (thread_list.size() != 0)&&(itr_srtf->arriving_time <= timer); current_cpu++) {	
+				
+					cpu_avail = false;
+
+					for (int t = 0; t < num_cpu; t++) {//before atempting to swap chek if there is an open cpu
+						if (CPUs[t] == NULL) {
+							cpu_avail = true;
+							current_cpu = t;//set current cpu to the one available
+						}
+					}
+					if (!cpu_avail&&CPUs[current_cpu] != NULL) {// check if anything is on the cpu if none are open
+							
+						if (CPUs[current_cpu]->remaining_time>itr_srtf->remaining_time) {//check if swap is needed otherwse do nothing
+
+							thread_off.tid = CPUs[current_cpu]->tid;
+							thread_off.arriving_time = CPUs[current_cpu]->arriving_time;
+							thread_off.remaining_time = CPUs[current_cpu]->remaining_time;
+							thread_off.priority = CPUs[current_cpu]->priority;
+
+							thread_list.push_front(thread_off);//thread removed from cpu added back to front of queue
+
+							CPUs[current_cpu] = new ThreadDescriptorBlock();
+							CPUs[current_cpu]->tid = itr_srtf->tid;
+							CPUs[current_cpu]->remaining_time = itr_srtf->remaining_time;
+							CPUs[current_cpu]->priority = itr_srtf->priority;
+							CPUs[current_cpu]->arriving_time = itr_srtf->arriving_time;
+								
+							itr_srtf = thread_list.erase(itr_srtf);
+									
+							if (!thread_list.empty()&&itr_srtf == thread_list.end()) {//go to next thread in queue if possible
+								itr_srtf = thread_list.begin();
+							}
+						}
+					}
+					else {//Put thread on cpu if nothing is on it
+						CPUs[current_cpu] = new ThreadDescriptorBlock();
+						CPUs[current_cpu]->tid = itr_srtf->tid;
+						CPUs[current_cpu]->remaining_time = itr_srtf->remaining_time;
+						CPUs[current_cpu]->priority = itr_srtf->priority;
+						CPUs[current_cpu]->arriving_time = itr_srtf->arriving_time;
+
+						itr_srtf = thread_list.erase(itr_srtf);
+						cpu_avail = false;
+						if (!thread_list.empty()&&itr_srtf==thread_list.end()) {//go to next thread in queue if possible
+							itr_srtf = thread_list.begin();
+						}
+					}		
+				}
+			}
+				
+			else { break; }//break to avoid threads that have not arrived yet
+			if (thread_list.size() > 0 &&!cpu_avail) {//go to next thread in queue if possible
+				++itr_srtf;
+			}		
+		}
+
+		for (int t = 0; t < num_cpu; t++) {//check to see if cpus have finished executing all threads
+			if (CPUs[t] != NULL) {
+				return true;//return true to continue executing
+			}
+		}
+		return false;//return false all threads have completed
+			
+	}
 		break;
 	case PBS:		//Priority Based Scheduling, with preemption
 	{ //Curly braces are here cause I was getting a weird error without them. 
