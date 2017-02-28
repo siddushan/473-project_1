@@ -152,6 +152,7 @@ bool MyScheduler::Dispatch()
 
 							if (thread_list.size() > 0) {
 								itr = thread_list.begin();
+								continue; //this continue statement loops back to the outer while loop early
 							}
 						}
 					}
@@ -167,17 +168,13 @@ bool MyScheduler::Dispatch()
 
 						if (thread_list.size() > 0) {
 							itr = thread_list.begin();
+							continue; //this continue statement loops back to the outer while loop early
 						}
 
 					}
 				}
 
-				if (thread_list.size() < 0) {
-					break;
-				}
-				else {
-					CPUs_index++; //increment index of the CPUs array
-				}
+				CPUs_index++; //increment index of the CPUs array
 
 			}
 
