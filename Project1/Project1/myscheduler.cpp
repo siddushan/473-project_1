@@ -12,6 +12,28 @@ bool sort_by_remaining_time(ThreadDescriptorBlock thread1, ThreadDescriptorBlock
 	return thread1.remaining_time < thread1.remaining_time;
 }
 
+void MyScheduler::addThreadtoCPU(list<ThreadDescriptorBlock>::iterator iter, int index) {
+
+	//insert new thread into CPU array
+	CPUs[index] = new ThreadDescriptorBlock();
+	CPUs[index]->arriving_time = iter->arriving_time;
+	CPUs[index]->priority = iter->priority;
+	CPUs[index]->remaining_time = iter->remaining_time;
+	CPUs[index]->tid = iter->tid;
+
+}
+
+void MyScheduler::removeThreadFromCPUAddToList(int index) {
+
+	//create thread with the attributes of CPUs[i] and add it to thread_list
+	ThreadDescriptorBlock thread = ThreadDescriptorBlock();
+	thread.arriving_time = CPUs[index]->arriving_time;
+	thread.priority = CPUs[index]->priority;
+	thread.remaining_time = CPUs[index]->remaining_time;
+	thread.tid = CPUs[index]->tid;
+
+	thread_list.push_front(thread); //add the thread from CPUs to the thread_list so it can execute again later
+}
 
 void MyScheduler::CreateThread(int arriving_time, int remaining_time, int priority, int tid) //Thread ID not Process ID
 {
@@ -135,29 +157,17 @@ bool MyScheduler::Dispatch()
 
 			int CPUs_index = 0;
 
-			while ((CPUs_index < num_cpu) && (!thread_list.empty())) {	//examine all threads which have arrived
+			while ((CPUs_index < num_cpu) && (!thread_list.empty())) {	
 
-				if (itr->arriving_time <= timer) {
+				if (itr->arriving_time <= timer) { //examine all threads which have arrived
 
 					if (CPUs[CPUs_index] != NULL) { //if the current CPU is full, check the priority of the task, to see if we need to swap priorities.
 
 						if (CPUs[CPUs_index]->priority > itr->priority) { //lower integer equals higher priority
 
-							//create thread with the attributes of CPUs[i] and add it to thread_list
-							ThreadDescriptorBlock thread = ThreadDescriptorBlock();
-							thread.arriving_time = CPUs[CPUs_index]->arriving_time;
-							thread.priority = CPUs[CPUs_index]->priority;
-							thread.remaining_time = CPUs[CPUs_index]->remaining_time;
-							thread.tid = CPUs[CPUs_index]->tid;
+							removeThreadFromCPUAddToList(CPUs_index);
 
-							thread_list.push_front(thread); //add the thread from CPUs to the thread_list so it can execute again later
-
-							//insert new thread into CPU array
-							CPUs[CPUs_index] = new ThreadDescriptorBlock();
-							CPUs[CPUs_index]->arriving_time = itr->arriving_time;
-							CPUs[CPUs_index]->priority = itr->priority;
-							CPUs[CPUs_index]->remaining_time = itr->remaining_time;
-							CPUs[CPUs_index]->tid = itr->tid;
+							addThreadtoCPU(itr, CPUs_index);
 
 							itr = thread_list.erase(itr);
 
@@ -169,11 +179,7 @@ bool MyScheduler::Dispatch()
 					}
 					else {
 
-						CPUs[CPUs_index] = new ThreadDescriptorBlock();
-						CPUs[CPUs_index]->arriving_time = itr->arriving_time;
-						CPUs[CPUs_index]->priority = itr->priority;
-						CPUs[CPUs_index]->remaining_time = itr->remaining_time;
-						CPUs[CPUs_index]->tid = itr->tid;
+						addThreadtoCPU(itr, CPUs_index);
 
 						itr = thread_list.erase(itr);
 
