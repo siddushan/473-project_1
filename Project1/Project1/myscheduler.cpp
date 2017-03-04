@@ -9,7 +9,7 @@ bool sort_by_arriving_time(ThreadDescriptorBlock thread1, ThreadDescriptorBlock 
 
 bool sort_by_remaining_time(ThreadDescriptorBlock thread1, ThreadDescriptorBlock thread2)
 {
-	return thread1.remaining_time < thread1.remaining_time;
+	return thread1.remaining_time < thread2.remaining_time;
 }
 
 void MyScheduler::addThreadtoCPU(list<ThreadDescriptorBlock>::iterator iter, int index) {
@@ -71,6 +71,7 @@ bool MyScheduler::Dispatch()
 	case FCFS:		//First Come First Serve
 	{
 		thread_list.sort(sort_by_arriving_time); //sort by arrival time
+		
 		for (list<ThreadDescriptorBlock>::iterator itr = thread_list.begin(); itr != thread_list.end() && !thread_list.empty();)
 		{
 			if (itr->arriving_time <= timer)
@@ -88,12 +89,37 @@ bool MyScheduler::Dispatch()
 			}
 			else
 				itr++;
-			
 		}
 	}
-		break;
+	break;
 	case STRFwoP:	//Shortest Time Remaining First, without preemption
-
+	{
+		thread_list.sort(sort_by_remaining_time);
+		for (list<ThreadDescriptorBlock>::iterator itr = thread_list.begin(); itr != thread_list.end() && !thread_list.empty();)
+		{
+			if (itr->arriving_time <= timer)
+			{
+				for (unsigned int i = 0; i < num_cpu; i++)
+				{
+					if (CPUs[i] == NULL)
+					{
+						addThreadtoCPU(itr, i);
+						itr = thread_list.erase(itr);
+						itr = thread_list.begin();
+						break;
+					}
+				}
+				if (itr == thread_list.end())
+				{
+					break;
+				}
+				else
+					itr++;
+			}
+			else
+				itr++;
+		}
+	}
 		break;
 	case STRFwP:{	//Shortest Time Remaining First, with preemption
 		list<ThreadDescriptorBlock>::iterator itr_srtf;// iterator through thread list
