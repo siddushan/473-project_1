@@ -70,9 +70,7 @@ bool MyScheduler::Dispatch()
 	{
 	case FCFS:		//First Come First Serve
 	{
-		//check if CPUs is full
-		//if it is full then you can't change anything until existing processes are done. 
-		//thread_list.sort(sort_by_arriving_time); //sort by arrival time
+		thread_list.sort(sort_by_arriving_time); //sort by arrival time
 		for (list<ThreadDescriptorBlock>::iterator itr = thread_list.begin(); itr != thread_list.end() && !thread_list.empty();)
 		{
 			if (itr->arriving_time <= timer)
