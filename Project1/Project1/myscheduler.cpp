@@ -54,7 +54,7 @@ bool MyScheduler::Dispatch()
 	if (thread_list.empty())
 	{
 		bool isDone = true;
-		for (int i = 0; i < num_cpu; i++)
+		for (unsigned int i = 0; i < num_cpu; i++)
 		{
 			if (CPUs[i] != NULL)
 			{
@@ -69,7 +69,30 @@ bool MyScheduler::Dispatch()
 	switch (policy)
 	{
 	case FCFS:		//First Come First Serve
-
+	{
+		//check if CPUs is full
+		//if it is full then you can't change anything until existing processes are done. 
+		//thread_list.sort(sort_by_arriving_time); //sort by arrival time
+		for (list<ThreadDescriptorBlock>::iterator itr = thread_list.begin(); itr != thread_list.end() && !thread_list.empty();)
+		{
+			if (itr->arriving_time <= timer)
+			{
+				for (unsigned int i = 0; i < num_cpu; i++)
+				{
+					if (CPUs[i] == NULL)
+					{
+						addThreadtoCPU(itr, i);
+						itr = thread_list.erase(itr);
+						itr = thread_list.begin();
+						break;
+					}
+				}
+			}
+			else
+				itr++;
+			
+		}
+	}
 		break;
 	case STRFwoP:	//Shortest Time Remaining First, without preemption
 
