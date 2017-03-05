@@ -22,6 +22,8 @@ public:
 	//Declare additional methods(s) below if needed.
 	bool compareTimeRemaining(ThreadDescriptorBlock thread01, ThreadDescriptorBlock thread02);
 	bool comparePriority(ThreadDescriptorBlock thread01, ThreadDescriptorBlock thread02);
+	void addThreadtoCPU(list<ThreadDescriptorBlock>::iterator iter, int index);
+	void removeThreadFromCPUAddToList(int index);
 	
 private:
 	list<ThreadDescriptorBlock> thread_list;
