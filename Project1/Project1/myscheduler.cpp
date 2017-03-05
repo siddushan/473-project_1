@@ -122,7 +122,10 @@ bool MyScheduler::Dispatch()
 	}
 		break;
 	case STRFwP:{	//Shortest Time Remaining First, with preemption
-				list<ThreadDescriptorBlock>::iterator itr_srtf, itr_lowest;// iterator through thread list
+//Shortest remaining time thread with higher priority(lower number) gets scheduled first
+		//preempt thread with highest time on cpu. If threads have equal time thread on lowest cpu number gets replaced
+
+		list<ThreadDescriptorBlock>::iterator itr_srtf, itr_lowest;// iterator through thread list
 		ThreadDescriptorBlock thread_off = ThreadDescriptorBlock();
 		int current_cpu = 0, cpu_highest, highest_time_on_cpu=0,lowest_time_in_list=0, temp;
 		bool cpu_avail=false;
@@ -153,8 +156,11 @@ bool MyScheduler::Dispatch()
 			itr_lowest = itr_srtf;
 
 			while (itr_srtf != thread_list.end()) {//find thread with lowest time in list
-				if (itr_srtf->arriving_time <= timer&&itr_srtf->remaining_time < itr_lowest->remaining_time)
-					itr_lowest = itr_srtf;
+				if (itr_srtf->arriving_time <= timer&&itr_srtf->remaining_time <= itr_lowest->remaining_time)
+					if (itr_srtf->remaining_time == itr_lowest->remaining_time) {//if remaining times match priority determines which to place on cpu
+						if (itr_srtf->priority > itr_lowest->priority) { itr_lowest=itr_srtf;}
+					}
+					else { itr_lowest = itr_srtf; }
 				itr_srtf++;
 			}
 			itr_srtf = itr_lowest;
@@ -205,8 +211,11 @@ bool MyScheduler::Dispatch()
 					itr_lowest = itr_srtf;
 
 					while (itr_srtf != thread_list.end()) {//find thread with lowest time
-						if (itr_srtf->arriving_time <= timer&&itr_srtf->remaining_time < itr_lowest->remaining_time)
-							itr_lowest = itr_srtf;
+						if (itr_srtf->arriving_time <= timer&&itr_srtf->remaining_time <= itr_lowest->remaining_time)
+							if (itr_srtf->remaining_time == itr_lowest->remaining_time) {//if remaining times match priority determines which to place on cpu
+								if (itr_srtf->priority > itr_lowest->priority) { itr_lowest=itr_srtf; }
+							}
+							else { itr_lowest = itr_srtf; }
 						itr_srtf++;
 					}
 					itr_srtf = itr_lowest;
