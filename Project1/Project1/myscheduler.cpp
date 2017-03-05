@@ -129,7 +129,7 @@ bool MyScheduler::Dispatch()
 
 		thread_list.sort(sort_by_arriving_time);//sort thread list according to arrival time
 				
-		for (int t = 0; t < num_cpu; t++) {//check to see if there is an idle cpu
+		for (int t = 0; t < num_cpu; t++) {//check to see if there is an idle cpu initially
 			if (CPUs[t] == NULL) {
 				current_cpu = t;
 				cpu_avail = true;
@@ -138,7 +138,7 @@ bool MyScheduler::Dispatch()
 			
 			else cpu_avail = false;
 		}
-		if (!cpu_avail) {//find cpu with thread that has highest time
+		if (!cpu_avail) {//find cpu with thread that has highest time initially
 			for (int t = 0; t < num_cpu; t++) {
 				if (CPUs[t] != NULL) {
 					if (CPUs[t]->remaining_time > highest_time_on_cpu) {
@@ -163,18 +163,15 @@ bool MyScheduler::Dispatch()
 				//place thread on cpu then check again and continue to place theads on cpu if needed
 				if (!cpu_avail) { //swap
 					 
+					removeThreadFromCPUAddToList(current_cpu);//remove thread to swap
 					
-
-					
-					removeThreadFromCPUAddToList(current_cpu);
-					
-					addThreadtoCPU(itr_srtf, current_cpu);
+					addThreadtoCPU(itr_srtf, current_cpu);//put lower time thread on cpu
 
 					itr_srtf = thread_list.erase(itr_srtf);
 
 				}
 				else {//put thread on idle cpu
-					addThreadtoCPU(itr_srtf, current_cpu);
+					addThreadtoCPU(itr_srtf, current_cpu);//put thread on idle cpu
 
 					itr_srtf = thread_list.erase(itr_srtf);
 					cpu_avail = false;
@@ -219,10 +216,11 @@ bool MyScheduler::Dispatch()
 		}
 
 		bool done = true;
-		for (int t = 0; t < num_cpu; t++) {
+		for (int t = 0; t < num_cpu; t++) {//make sure all threads have finished executing on cpu and theres no more to execute
 			if (CPUs[t] != NULL)
 				return true;
 		}
+		if(thread_list.empty())//return false to signify all threads have finished executing
 		return false;
 			
 	}
