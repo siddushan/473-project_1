@@ -86,6 +86,8 @@ bool MyScheduler::Dispatch()
 						break;
 					}
 				}
+				if (itr != thread_list.end())
+					itr++;
 			}
 			else
 				itr++;
