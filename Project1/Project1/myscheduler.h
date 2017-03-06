@@ -7,7 +7,10 @@
    They are allowed to add any additional functionality (only 
    declaration in this file, define in 'myschedule.cpp')
    which they might find helpful.*/
-
+//NAMES
+//Sidd Shanmugam
+//Albert Wilson
+//Ryan Byrne
 #include "scheduler.h"
 #include <list>
 
